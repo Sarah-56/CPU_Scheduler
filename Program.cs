@@ -1,6 +1,6 @@
 ﻿/************************************************************************************************
  * CPU scheduler FCFS
- * takes input arrival time and burst time
+ * takes input arrival time and burst time for each process and number of processes
  * the output is processes' queue stored in list (queue) and linked list in case needed
  ************************************************************************************************/
 using System;
@@ -19,41 +19,39 @@ namespace Scheduler
     };
     class Program
     {
-        //3lshan ahmed :(
-        public static LinkedList<process> list = new LinkedList<process>();
+        public static int processesNum;
+        //Final output linkedlist
+        public static LinkedList<process> output = new LinkedList<process>();
         public static LinkedListNode<process> index = null;
         //create an empty list of type process
         public static List<process> processes = new List<process>();
+        //Final processes arrangement
         public static List<process> queue = new List<process>();
 
         //Time calculations and store the final processes' queue in a new list and linked list
-        static void arrange(process task, int start, int total, int i)
+        static void arrange(process task, int start, int total)
         {
             task.completionTime = total - start;
             task.turnArroundTime = task.completionTime - task.arrivalTime;
             task.waitingTime = task.turnArroundTime - task.burstTime; 
             queue.Add(task);
             
-            if (i == 0)
+            if (output.Count == 0)
             {
-                list.AddFirst(task);
-                 index = list.Last;
+                output.AddFirst(task);
+                 index = output.Last;
             }
             else
             {
-                if(i == 2)
-                {
-                    list.AddLast(task);
-                }
-                list.AddAfter(index, task);
-                index = list.Last;
+                output.AddLast(task);
+                index = output.Last;        
             }
         }
         //Main function
         static void Main(string[] args)
         {
             Console.Write("Enter number of processes: ");
-            int processesNum = Convert.ToInt32(Console.ReadLine());
+            processesNum = Convert.ToInt32(Console.ReadLine());
             Console.WriteLine();
 
             process task = new process();
@@ -77,12 +75,10 @@ namespace Scheduler
 
             int start = processes[0].arrivalTime;
             int total = 0;
-            int c = 0;
             foreach (process i in processes)
             {
                 total += i.burstTime;
-                arrange(i, start, total, c);
-                c++;
+                arrange(i, start, total);
             }
             processes.Clear();
 
@@ -114,6 +110,10 @@ namespace Scheduler
 
             Console.WriteLine("Average waiting time = " + averageWaitingTime);
             Console.WriteLine("Average turn arround time = " + averageTurnArround);
+            foreach(process k in output)
+            {
+                Console.WriteLine(k.pID + "\t\t" + k.arrivalTime + "\t\t" + k.burstTime + "\t\t" + k.completionTime + "\t\t\t" + k.turnArroundTime + "\t\t" + k.waitingTime);
+            }
             Console.ReadLine();
         }
     }
